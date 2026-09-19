@@ -259,11 +259,13 @@ Cada 5 min (cron) → autostop.sh
 
 | Recurso | Costo aproximado (us-east-1) |
 |---|---|
-| **EC2 `t2.large`** | ~$0.0928/hora |
-| **EBS gp3 (8 GB)** | ~$0.64/mes |
+| **EC2 `t2.large`** | ~$0.0928/hora (incluye EBS efímero) |
 | **Lambda (2 funciones)** | Prácticamente gratis (Free Tier) |
 | **S3 (almacenamiento)** | ~$0.023/GB/mes |
 | **DuckDNS** | Gratis |
+
+> [!NOTE]
+> El volumen EBS no genera costo persistente ya que se destruye junto con la instancia (`DeleteOnTermination: True`). Solo existe mientras el servidor está activo.
 
 > [!TIP]
 > Si juegas 4 horas al día, el costo mensual de EC2 sería aproximadamente **~$11.14/mes** (~0.0928 × 4 × 30). Comparado con un hosting dedicado de Minecraft (~$15-30/mes), esta solución puede ser más económica y flexible.
