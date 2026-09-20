@@ -11,6 +11,7 @@ DUCKDNS_DOMAIN="domain_name"           # Ejemplo: "miservermine" (sin .duckdns.o
 DUCKDNS_TOKEN="token"                 # Tu token de DuckDNS
 JAVA_RAM_MIN="4G"                        # Memoria RAM inicial para la JVM (-Xms)
 JAVA_RAM_MAX="8G"                        # Memoria RAM máxima para la JVM (-Xmx)
+TOKEN_LAMBDA="token_value"              # Token de seguridad que espera la función lambda
 # ==============================================================================
 
 # 1. Instalar dependencias (Java 17, AWS CLI, cronie)
@@ -156,7 +157,7 @@ if [ "$CONNECTIONS" -eq 0 ]; then
           --region us-east-1 \
           --function-name DestroyMinecraftServer \
           --cli-binary-format raw-in-base64-out \
-          --payload '{"instance_id": "'"$INSTANCE_ID"'", "token": "token_value"}' \
+          --payload '{"instance_id": "'"$INSTANCE_ID"'", "token": "${TOKEN_LAMBDA}"}' \
           /tmp/lambda_out.json
     fi
 else
