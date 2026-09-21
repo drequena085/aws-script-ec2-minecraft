@@ -121,7 +121,7 @@ chown -R minecraft:minecraft /opt/minecraft
 
 # Script de auto-apagado por inactividad
 mkdir -p /opt/minecraft
-cat << 'EOF' > /opt/minecraft/autostop.sh
+cat << EOF > /opt/minecraft/autostop.sh
 #!/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 PORT=25565
@@ -130,53 +130,53 @@ TOKEN_LAMBDA="${TOKEN_LAMBDA}"
 
 # 1. No contar si el servicio ya se está deteniendo o está apagado
 if ! systemctl is-active --quiet minecraft.service; then
-    rm -f "$INACTIVE_FILE"
+    rm -f "\$INACTIVE_FILE"
     exit 0
 fi
 
-# 2. Tiempo de gracia de 5 minutos tras iniciar la EC2
-UPTIME=$(cut -d. -f1 /proc/uptime)
-if [ "$UPTIME" -lt 300 ]; then
-    rm -f "$INACTIVE_FILE"
+# 2. Tiempo de gracia de 10 minutos tras iniciar la EC2
+UPTIME=\$(cut -d. -f1 /proc/uptime)
+if [ "\$UPTIME" -lt 300 ]; then
+    rm -f "\$INACTIVE_FILE"
     exit 0
 fi
 
 # 3. Detección mejorada de conexiones (TCP en estado ESTABLISHED)
-CONNECTIONS=$(ss -tun state established "( dport = :$PORT or sport = :$PORT )" | grep -v "Recv-Q" | wc -l)
+CONNECTIONS=\$(ss -tun state established "( dport = :\$PORT or sport = :\$PORT )" | grep -v "Recv-Q" | wc -l)
 
-if [ "$CONNECTIONS" -eq 0 ]; then
-    if [ -f "$INACTIVE_FILE" ]; then
-        COUNT=$(cat "$INACTIVE_FILE")
-        COUNT=$((COUNT + 1))
+if [ "\$CONNECTIONS" -eq 0 ]; then
+    if [ -f "\$INACTIVE_FILE" ]; then
+        COUNT=\$(cat "\$INACTIVE_FILE")
+        COUNT=\$((COUNT + 1))
     else
         COUNT=1
     fi
-    echo "$COUNT" > "$INACTIVE_FILE"
+    echo "\$COUNT" > "\$INACTIVE_FILE"
 
     # Requiere 2 chequeos consecutivos (10 min sin ningún jugador)
-    if [ "$COUNT" -ge 2 ]; then
+    if [ "\$COUNT" -ge 2 ]; then
         echo "Inactividad detectada por 10 minutos. Deteniendo servidor..."
-        rm -f "$INACTIVE_FILE"
+        rm -f "\$INACTIVE_FILE"
         systemctl stop minecraft.service
         
         # Obtención segura de INSTANCE_ID (IMDSv2)
-        TOKEN=$(curl -s -S -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 60")
-        INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
-        if [ -z "$INSTANCE_ID" ]; then
-            INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+        TOKEN=\$(curl -s -S -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 60")
+        INSTANCE_ID=\$(curl -s -H "X-aws-ec2-metadata-token: \$TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+        if [ -z "\$INSTANCE_ID" ]; then
+            INSTANCE_ID=\$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
         fi
 
-        # Invocación compatible con AWS CLI v2 usando comillas sencillas en el JSON exterior
+        # Invocación compatible con AWS CLI v2
         aws lambda invoke \
           --region us-east-1 \
           --function-name DestroyMinecraftServer \
           --cli-binary-format raw-in-base64-out \
-          --payload '{"instance_id": "'"$INSTANCE_ID"'", "token": "'"$TOKEN_LAMBDA"'"}' \
+          --payload '{"instance_id": "'"\$INSTANCE_ID"'", "token": "'"\$TOKEN_LAMBDA"'"}' \
           /tmp/lambda_out.json
     fi
 else
     # Si hay conexiones, limpiar inmediatamente el contador
-    rm -f "$INACTIVE_FILE"
+    rm -f "\$INACTIVE_FILE"
 fi
 EOF
 
