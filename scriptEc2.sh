@@ -80,7 +80,7 @@ if [ ! -f "server.jar" ]; then
 fi
 
 echo "Iniciando servidor de Minecraft con Java 17..."
-# Si tu servidor usa 12GB sube "G1HeapRegionSize" a 8M
+# Si tu servidor usa 9GB - 15GB sube "G1HeapRegionSize" a 8M. Si usa 16GB - 31GB sube a 16M
 exec java -Xms${JAVA_RAM_MIN} -Xmx${JAVA_RAM_MAX} \
   -XX:+UseG1GC \
   -XX:+ParallelRefProcEnabled \
