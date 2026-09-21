@@ -9,8 +9,8 @@ S3_BUCKET="s3://bucket_name"
 SERVER_TAR="file_name.tar"           # Nombre del archivo .tar en tu bucket S3
 DUCKDNS_DOMAIN="domain_name"           # Ejemplo: "miservermine" (sin .duckdns.org)
 DUCKDNS_TOKEN="token"                 # Tu token de DuckDNS
-JAVA_RAM_MIN="8G"                        # Memoria RAM inicial para la JVM (-Xms)
-JAVA_RAM_MAX="8G"                        # Memoria RAM máxima para la JVM (-Xmx)
+JAVA_RAM_MIN="5G"                        # Memoria RAM inicial para la JVM (-Xms)
+JAVA_RAM_MAX="5G"                        # Memoria RAM máxima para la JVM (-Xmx)
 TOKEN_LAMBDA="token_value"              # Token de seguridad que espera la función lambda
 # ==============================================================================
 
@@ -80,19 +80,16 @@ if [ ! -f "server.jar" ]; then
 fi
 
 echo "Iniciando servidor de Minecraft con Java 17..."
-# Si tu servidor usa 9GB - 15GB sube "G1HeapRegionSize" a 8M. Si usa 16GB - 31GB sube a 16M
 exec java -Xms${JAVA_RAM_MIN} -Xmx${JAVA_RAM_MAX} \
   -XX:+UseG1GC \
   -XX:+ParallelRefProcEnabled \
   -XX:MaxGCPauseMillis=200 \
-  -XX:+UnlockExperimentalVMOptions \
   -XX:+DisableExplicitGC \
+  -XX:+AlwaysPreTouch \
+  -XX:+UnlockExperimentalVMOptions \
+  -XX:G1HeapRegionSize=8M \
   -XX:G1NewSizePercent=30 \
   -XX:G1MaxNewSizePercent=40 \
-  -XX:G1HeapRegionSize=4M \
-  -XX:G1ReservePercent=20 \
-  -XX:G1HeapWastePercent=5 \
-  -XX:G1MixedGCCountTarget=4 \
   -jar server.jar nogui
 EOF
 
