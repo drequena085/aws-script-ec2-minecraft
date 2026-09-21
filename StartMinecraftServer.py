@@ -7,7 +7,7 @@ ec2 = boto3.client('ec2')
 
 # Configuración parametrizada
 AMI_ID = "ami-xxxxxxxxxxxxxxxxx"        # ID de Amazon Linux 2023 en us-east-1
-INSTANCE_TYPE = "t2.large"
+INSTANCE_TYPE = "t3a.large"
 SECURITY_GROUP_ID = "sg-xxxxxxxxxxxx"    # Tu Security Group de Minecraft
 IAM_ROLE_ARN = "arn:aws:iam::123456789012:instance-profile/TuRolMinecraft"
 KEY_NAME = "tu-keypair"                  # Opcional (deja vacío si no usas SSH)
