@@ -141,6 +141,7 @@ if [ "$UPTIME" -lt 300 ]; then
 fi
 
 # 3. Detección mejorada de conexiones (TCP en estado ESTABLISHED)
+TOKEN_LAMBDA="${TOKEN_LAMBDA}"
 CONNECTIONS=$(ss -tun state established "( dport = :$PORT or sport = :$PORT )" | grep -v "Recv-Q" | wc -l)
 
 if [ "$CONNECTIONS" -eq 0 ]; then
@@ -170,7 +171,7 @@ if [ "$CONNECTIONS" -eq 0 ]; then
           --region us-east-1 \
           --function-name DestroyMinecraftServer \
           --cli-binary-format raw-in-base64-out \
-          --payload '{"instance_id": "'"$INSTANCE_ID"'", "token": "${TOKEN_LAMBDA}"}' \
+          --payload '{"instance_id": "'"$INSTANCE_ID"'", "token": "'"$TOKEN_LAMBDA"'"}' \
           /tmp/lambda_out.json
     fi
 else
