@@ -126,6 +126,7 @@ cat << 'EOF' > /opt/minecraft/autostop.sh
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 PORT=25565
 INACTIVE_FILE="/tmp/inactive_count"
+TOKEN_LAMBDA="${TOKEN_LAMBDA}"
 
 # 1. No contar si el servicio ya se está deteniendo o está apagado
 if ! systemctl is-active --quiet minecraft.service; then
@@ -141,7 +142,6 @@ if [ "$UPTIME" -lt 300 ]; then
 fi
 
 # 3. Detección mejorada de conexiones (TCP en estado ESTABLISHED)
-TOKEN_LAMBDA="${TOKEN_LAMBDA}"
 CONNECTIONS=$(ss -tun state established "( dport = :$PORT or sport = :$PORT )" | grep -v "Recv-Q" | wc -l)
 
 if [ "$CONNECTIONS" -eq 0 ]; then
